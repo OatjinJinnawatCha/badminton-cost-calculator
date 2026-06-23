@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>คำนวณค่าแบดมินตัน</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-dark: #1558b0;
+      --accent: #34a853;
+      --danger: #ea4335;
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --radius: 14px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Sarabun', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      padding: 16px 16px 40px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--primary);
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text);
+      background: #fafafa;
+      transition: border-color 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+    }
+
+    .field { margin-bottom: 16px; }
+
+    /* Player list */
+    #player-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+
+    .player-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .player-row input { flex: 1; }
+
+    .player-row .num {
+      min-width: 26px;
+      font-weight: 700;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .btn-remove {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 8px;
+      background: #fee2e2;
+      color: var(--danger);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .btn-remove:hover { background: #fca5a5; }
+
+    .btn-add {
+      width: 100%;
+      padding: 11px;
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--primary);
+      font-size: 0.95rem;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-add:hover { border-color: var(--primary); background: #eff6ff; }
+
+    /* Calculate button */
+    .btn-calc {
+      width: 100%;
+      padding: 15px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1.1rem;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(26,115,232,0.35);
+      transition: background 0.2s, transform 0.1s;
+      margin-bottom: 16px;
+    }
+
+    .btn-calc:active { transform: scale(0.98); }
+    .btn-calc:hover { background: var(--primary-dark); }
+
+    /* Result card */
+    #result-card { display: none; }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .result-header .section-title { margin-bottom: 0; }
+
+    .btn-copy {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-copy:hover { background: #2d9148; }
+    .btn-copy.copied { background: #6b7280; }
+
+    .summary-box {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .summary-box .row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .summary-box .row.total {
+      border-top: 1.5px solid var(--border);
+      margin-top: 8px;
+      padding-top: 8px;
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 0.95rem;
+    }
+
+    .player-costs { display: flex; flex-direction: column; gap: 8px; }
+
+    .player-cost-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #eff6ff;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .player-name { font-weight: 600; }
+
+    .player-amount {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1f2937;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 999;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 0.82rem;
+      margin-top: 4px;
+    }
+
+    @media (min-width: 480px) {
+      body { padding: 24px; }
+      .card { max-width: 480px; margin-left: auto; margin-right: auto; }
+      h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🏸 คำนวณค่าแบดมินตัน</h1>
+  <p class="subtitle">แบ่งค่าใช้จ่ายให้ยุติธรรม</p>
+
+  <!-- Players -->
+  <div class="card">
+    <div class="section-title">👥 รายชื่อผู้เล่น</div>
+    <div id="player-list"></div>
+    <button class="btn-add" onclick="addPlayer()">+ เพิ่มผู้เล่น</button>
+  </div>
+
+  <!-- Game Info -->
+  <div class="card">
+    <div class="section-title">📋 ข้อมูลการเล่น</div>
+
+    <div class="field">
+      <label for="play-date">วันที่เล่น</label>
+      <input type="date" id="play-date" />
+    </div>
+
+    <div class="field">
+      <label for="shuttle-price">ราคาลูกแบด (บาท/ลูก)</label>
+      <input type="number" id="shuttle-price" placeholder="0" min="0" step="1" inputmode="decimal" />
+    </div>
+
+    <div class="field">
+      <label for="shuttle-count">จำนวนลูกที่ใช้</label>
+      <input type="number" id="shuttle-count" placeholder="0" min="0" step="1" inputmode="numeric" />
+    </div>
+
+    <div class="field">
+      <label for="court-cost">ค่าสนาม (บาท)</label>
+      <input type="number" id="court-cost" placeholder="0" min="0" step="1" inputmode="decimal" />
+    </div>
+  </div>
+
+  <button class="btn-calc" onclick="calculate()">คำนวณค่าใช้จ่าย</button>
+
+  <!-- Result -->
+  <div class="card" id="result-card">
+    <div class="result-header">
+      <div class="section-title">💰 สรุปค่าใช้จ่าย</div>
+      <button class="btn-copy" id="copy-btn" onclick="copyToChat()">
+        <span>📋</span> คัดลอก
+      </button>
+    </div>
+
+    <div class="summary-box" id="summary-box"></div>
+    <div class="player-costs" id="player-costs"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let playerCount = 0;
+
+    function addPlayer(name = '') {
+      playerCount++;
+      const list = document.getElementById('player-list');
+      const row = document.createElement('div');
+      row.className = 'player-row';
+      row.dataset.id = playerCount;
+      row.innerHTML = `
+        <span class="num">${list.children.length + 1}</span>
+        <input type="text" placeholder="ชื่อผู้เล่น" value="${name}" />
+        <button class="btn-remove" onclick="removePlayer(this)" title="ลบ">✕</button>
+      `;
+      list.appendChild(row);
+      updateNumbers();
+    }
+
+    function removePlayer(btn) {
+      const list = document.getElementById('player-list');
+      if (list.children.length <= 1) {
+        showToast('ต้องมีผู้เล่นอย่างน้อย 1 คน');
+        return;
+      }
+      btn.closest('.player-row').remove();
+      updateNumbers();
+    }
+
+    function updateNumbers() {
+      document.querySelectorAll('#player-list .player-row').forEach((row, i) => {
+        row.querySelector('.num').textContent = i + 1;
+      });
+    }
+
+    function getPlayers() {
+      return [...document.querySelectorAll('#player-list .player-row input')]
+        .map(i => i.value.trim() || `ผู้เล่น ${i.closest('.player-row').querySelector('.num').textContent}`);
+    }
+
+    function formatDate(val) {
+      if (!val) return '-';
+      const [y, m, d] = val.split('-');
+      const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+      return `${parseInt(d)} ${months[parseInt(m)-1]} ${parseInt(y)+543}`;
+    }
+
+    function fmt(num) {
+      return num.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function calculate() {
+      const players = getPlayers();
+      const date = document.getElementById('play-date').value;
+      const shuttlePrice = parseFloat(document.getElementById('shuttle-price').value) || 0;
+      const shuttleCount = parseFloat(document.getElementById('shuttle-count').value) || 0;
+      const courtCost = parseFloat(document.getElementById('court-cost').value) || 0;
+
+      if (players.length === 0) { showToast('กรุณาเพิ่มผู้เล่นอย่างน้อย 1 คน'); return; }
+
+      const shuttleCostTotal = shuttlePrice * shuttleCount;
+      const total = shuttleCostTotal + courtCost;
+      const perPerson = players.length > 0 ? total / players.length : 0;
+
+      // Summary box
+      const summaryBox = document.getElementById('summary-box');
+      summaryBox.innerHTML = `
+        <div class="row"><span>วันที่เล่น</span><span>${formatDate(date)}</span></div>
+        <div class="row"><span>จำนวนผู้เล่น</span><span>${players.length} คน</span></div>
+        <div class="row"><span>ค่าลูก (${shuttleCount} ลูก × ${fmt(shuttlePrice)} ฿)</span><span>${fmt(shuttleCostTotal)} ฿</span></div>
+        <div class="row"><span>ค่าสนาม</span><span>${fmt(courtCost)} ฿</span></div>
+        <div class="row total"><span>รวมทั้งหมด</span><span>${fmt(total)} ฿</span></div>
+      `;
+
+      // Per-person rows
+      const costDiv = document.getElementById('player-costs');
+      costDiv.innerHTML = players.map(name => `
+        <div class="player-cost-row">
+          <span class="player-name">${name}</span>
+          <span class="player-amount">${fmt(perPerson)} ฿</span>
+        </div>
+      `).join('');
+
+      const resultCard = document.getElementById('result-card');
+      resultCard.style.display = 'block';
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function copyToChat() {
+      const players = getPlayers();
+      const date = document.getElementById('play-date').value;
+      const shuttlePrice = parseFloat(document.getElementById('shuttle-price').value) || 0;
+      const shuttleCount = parseFloat(document.getElementById('shuttle-count').value) || 0;
+      const courtCost = parseFloat(document.getElementById('court-cost').value) || 0;
+
+      const shuttleCostTotal = shuttlePrice * shuttleCount;
+      const total = shuttleCostTotal + courtCost;
+      const perPerson = total / players.length;
+
+      let msg = `🏸 สรุปค่าแบดมินตัน\n`;
+      msg += `📅 วันที่: ${formatDate(date)}\n`;
+      msg += `─────────────────\n`;
+      msg += `🪶 ค่าลูก: ${shuttleCount} ลูก × ${fmt(shuttlePrice)} ฿ = ${fmt(shuttleCostTotal)} ฿\n`;
+      msg += `🏟️ ค่าสนาม: ${fmt(courtCost)} ฿\n`;
+      msg += `💰 รวม: ${fmt(total)} ฿\n`;
+      msg += `👥 ผู้เล่น ${players.length} คน\n`;
+      msg += `─────────────────\n`;
+      msg += `คนละ ${fmt(perPerson)} ฿\n\n`;
+      msg += players.map(n => `• ${n} → ${fmt(perPerson)} ฿`).join('\n');
+
+      navigator.clipboard.writeText(msg).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.classList.add('copied');
+        btn.innerHTML = '<span>✅</span> คัดลอกแล้ว';
+        showToast('คัดลอกข้อความแล้ว!');
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = '<span>📋</span> คัดลอก';
+        }, 2500);
+      }).catch(() => {
+        // fallback for older browsers
+        const ta = document.createElement('textarea');
+        ta.value = msg;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('คัดลอกข้อความแล้ว!');
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // Init with 2 default players and today's date
+    addPlayer();
+    addPlayer();
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('play-date').value = today;
+  </script>
+</body>
+</html>
