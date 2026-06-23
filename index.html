@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,10 +22,14 @@
       --muted: #6b7280;
       --border: #e5e7eb;
       --radius: 14px;
-      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'Sarabun', 'Segoe UI', sans-serif;
@@ -96,10 +101,17 @@
       background: #fff;
     }
 
-    .field { margin-bottom: 16px; }
+    .field {
+      margin-bottom: 16px;
+    }
 
     /* Player list */
-    #player-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+    #player-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
 
     .player-row {
       display: flex;
@@ -107,7 +119,9 @@
       gap: 8px;
     }
 
-    .player-row input { flex: 1; }
+    .player-row input {
+      flex: 1;
+    }
 
     .player-row .num {
       min-width: 26px;
@@ -133,7 +147,9 @@
       transition: background 0.15s;
     }
 
-    .btn-remove:hover { background: #fca5a5; }
+    .btn-remove:hover {
+      background: #fca5a5;
+    }
 
     .btn-add {
       width: 100%;
@@ -149,7 +165,10 @@
       transition: border-color 0.2s, background 0.2s;
     }
 
-    .btn-add:hover { border-color: var(--primary); background: #eff6ff; }
+    .btn-add:hover {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
 
     /* Calculate button */
     .btn-calc {
@@ -163,16 +182,23 @@
       font-family: inherit;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(26,115,232,0.35);
+      box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35);
       transition: background 0.2s, transform 0.1s;
       margin-bottom: 16px;
     }
 
-    .btn-calc:active { transform: scale(0.98); }
-    .btn-calc:hover { background: var(--primary-dark); }
+    .btn-calc:active {
+      transform: scale(0.98);
+    }
+
+    .btn-calc:hover {
+      background: var(--primary-dark);
+    }
 
     /* Result card */
-    #result-card { display: none; }
+    #result-card {
+      display: none;
+    }
 
     .result-header {
       display: flex;
@@ -181,7 +207,9 @@
       margin-bottom: 16px;
     }
 
-    .result-header .section-title { margin-bottom: 0; }
+    .result-header .section-title {
+      margin-bottom: 0;
+    }
 
     .btn-copy {
       display: flex;
@@ -199,8 +227,13 @@
       transition: background 0.2s;
     }
 
-    .btn-copy:hover { background: #2d9148; }
-    .btn-copy.copied { background: #6b7280; }
+    .btn-copy:hover {
+      background: #2d9148;
+    }
+
+    .btn-copy.copied {
+      background: #6b7280;
+    }
 
     .summary-box {
       background: #f8fafc;
@@ -226,7 +259,11 @@
       font-size: 0.95rem;
     }
 
-    .player-costs { display: flex; flex-direction: column; gap: 8px; }
+    .player-costs {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
     .player-cost-row {
       display: flex;
@@ -237,7 +274,9 @@
       padding: 12px 14px;
     }
 
-    .player-name { font-weight: 600; }
+    .player-name {
+      font-weight: 600;
+    }
 
     .player-amount {
       font-weight: 700;
@@ -285,7 +324,9 @@
       user-select: none;
     }
 
-    .toggle-row input[type="checkbox"] { display: none; }
+    .toggle-row input[type="checkbox"] {
+      display: none;
+    }
 
     .toggle-track {
       position: relative;
@@ -306,23 +347,48 @@
       height: 20px;
       background: #fff;
       border-radius: 50%;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s;
     }
 
-    .toggle-row input[type="checkbox"]:checked ~ .toggle-track { background: var(--primary); }
-    .toggle-row input[type="checkbox"]:checked ~ .toggle-track::after { transform: translateX(18px); }
+    .toggle-row input[type="checkbox"]:checked~.toggle-track {
+      background: var(--primary);
+    }
 
-    .toggle-label { font-size: 0.95rem; font-weight: 600; flex: 1; }
-    .toggle-hint { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+    .toggle-row input[type="checkbox"]:checked~.toggle-track::after {
+      transform: translateX(18px);
+    }
+
+    .toggle-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .toggle-hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
 
     @media (min-width: 480px) {
-      body { padding: 24px; }
-      .card { max-width: 480px; margin-left: auto; margin-right: auto; }
-      h1 { font-size: 1.6rem; }
+      body {
+        padding: 24px;
+      }
+
+      .card {
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+      }
     }
   </style>
 </head>
+
 <body>
 
   <h1>🏸 BadCal</h1>
@@ -444,8 +510,8 @@
     function formatDate(val) {
       if (!val) return '-';
       const [y, m, d] = val.split('-');
-      const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-      return `${parseInt(d)} ${months[parseInt(m)-1]} ${parseInt(y)+543}`;
+      const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+      return `${parseInt(d)} ${months[parseInt(m) - 1]} ${parseInt(y) + 543}`;
     }
 
     function fmt(num) {
@@ -513,7 +579,6 @@
       msg += `💰 รวม: ${fmt(total)} ฿\n`;
       msg += `👥 ผู้เล่น ${players.length} คน\n`;
       msg += `─────────────────\n`;
-      msg += `คนละ ${fmt(perPerson)} ฿${roundUp ? ` (ปัดเศษขึ้นจาก ${fmt(perPersonExact)} ฿)` : ''}\n\n`;
       msg += players.map(n => `• ${n} → ${fmt(perPerson)} ฿`).join('\n');
 
       navigator.clipboard.writeText(msg).then(() => {
@@ -553,4 +618,5 @@
     document.getElementById('play-date').value = today;
   </script>
 </body>
+
 </html>
