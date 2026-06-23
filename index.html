@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>คำนวณค่าแบดมินตัน</title>
+  <title>BadCal – Badminton Calculator</title>
   <style>
     :root {
       --primary: #1a73e8;
@@ -268,6 +268,49 @@
       margin-top: 4px;
     }
 
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-row input[type="checkbox"] { display: none; }
+
+    .toggle-track {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      background: #d1d5db;
+      border-radius: 999px;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .toggle-row input[type="checkbox"]:checked ~ .toggle-track { background: var(--primary); }
+    .toggle-row input[type="checkbox"]:checked ~ .toggle-track::after { transform: translateX(18px); }
+
+    .toggle-label { font-size: 0.95rem; font-weight: 600; flex: 1; }
+    .toggle-hint { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
     @media (min-width: 480px) {
       body { padding: 24px; }
       .card { max-width: 480px; margin-left: auto; margin-right: auto; }
@@ -277,8 +320,8 @@
 </head>
 <body>
 
-  <h1>🏸 คำนวณค่าแบดมินตัน</h1>
-  <p class="subtitle">แบ่งค่าใช้จ่ายให้ยุติธรรม</p>
+  <h1>🏸 BadCal</h1>
+  <p class="subtitle">Badminton Calculator · แบ่งค่าใช้จ่ายให้ยุติธรรม</p>
 
   <!-- Players -->
   <div class="card">
@@ -310,6 +353,15 @@
       <label for="court-cost">ค่าสนาม (บาท)</label>
       <input type="number" id="court-cost" placeholder="0" min="0" step="1" inputmode="decimal" />
     </div>
+
+    <label class="toggle-row" for="round-up">
+      <input type="checkbox" id="round-up" />
+      <span class="toggle-track"></span>
+      <span>
+        <div class="toggle-label">ปัดเศษขึ้น</div>
+        <div class="toggle-hint">ปัดค่าต่อคนขึ้นเป็นจำนวนเต็ม (Math.ceil)</div>
+      </span>
+    </label>
   </div>
 
   <button class="btn-calc" onclick="calculate()">คำนวณค่าใช้จ่าย</button>
@@ -340,7 +392,7 @@
       row.dataset.id = playerCount;
       row.innerHTML = `
         <span class="num">${list.children.length + 1}</span>
-        <input type="text" placeholder="ชื่อผู้เล่น" value="${name}" />
+        <input type="text" placeholder="ชื่อผู้เล่น" value="${name}" onkeydown="playerEnter(event, this)" />
         <button class="btn-remove" onclick="removePlayer(this)" title="ลบ">✕</button>
       `;
       list.appendChild(row);
@@ -355,6 +407,22 @@
       }
       btn.closest('.player-row').remove();
       updateNumbers();
+    }
+
+    function playerEnter(e, input) {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      const inputs = [...document.querySelectorAll('#player-list .player-row input')];
+      const idx = inputs.indexOf(input);
+      if (idx < inputs.length - 1) {
+        inputs[idx + 1].focus();
+      } else {
+        addPlayer();
+        setTimeout(() => {
+          const all = document.querySelectorAll('#player-list .player-row input');
+          all[all.length - 1].focus();
+        }, 0);
+      }
     }
 
     function updateNumbers() {
@@ -388,9 +456,11 @@
 
       if (players.length === 0) { showToast('กรุณาเพิ่มผู้เล่นอย่างน้อย 1 คน'); return; }
 
+      const roundUp = document.getElementById('round-up').checked;
       const shuttleCostTotal = shuttlePrice * shuttleCount;
       const total = shuttleCostTotal + courtCost;
-      const perPerson = players.length > 0 ? total / players.length : 0;
+      const perPersonExact = players.length > 0 ? total / players.length : 0;
+      const perPerson = roundUp ? Math.ceil(perPersonExact) : perPersonExact;
 
       // Summary box
       const summaryBox = document.getElementById('summary-box');
@@ -400,6 +470,7 @@
         <div class="row"><span>ค่าลูก (${shuttleCount} ลูก × ${fmt(shuttlePrice)} ฿)</span><span>${fmt(shuttleCostTotal)} ฿</span></div>
         <div class="row"><span>ค่าสนาม</span><span>${fmt(courtCost)} ฿</span></div>
         <div class="row total"><span>รวมทั้งหมด</span><span>${fmt(total)} ฿</span></div>
+        ${roundUp ? `<div class="row"><span style="color:var(--muted);font-size:0.82rem">ปัดเศษขึ้นแล้ว (จาก ${fmt(perPersonExact)} ฿)</span></div>` : ''}
       `;
 
       // Per-person rows
@@ -423,9 +494,11 @@
       const shuttleCount = parseFloat(document.getElementById('shuttle-count').value) || 0;
       const courtCost = parseFloat(document.getElementById('court-cost').value) || 0;
 
+      const roundUp = document.getElementById('round-up').checked;
       const shuttleCostTotal = shuttlePrice * shuttleCount;
       const total = shuttleCostTotal + courtCost;
-      const perPerson = total / players.length;
+      const perPersonExact = total / players.length;
+      const perPerson = roundUp ? Math.ceil(perPersonExact) : perPersonExact;
 
       let msg = `🏸 สรุปค่าแบดมินตัน\n`;
       msg += `📅 วันที่: ${formatDate(date)}\n`;
@@ -435,7 +508,7 @@
       msg += `💰 รวม: ${fmt(total)} ฿\n`;
       msg += `👥 ผู้เล่น ${players.length} คน\n`;
       msg += `─────────────────\n`;
-      msg += `คนละ ${fmt(perPerson)} ฿\n\n`;
+      msg += `คนละ ${fmt(perPerson)} ฿${roundUp ? ` (ปัดเศษขึ้นจาก ${fmt(perPersonExact)} ฿)` : ''}\n\n`;
       msg += players.map(n => `• ${n} → ${fmt(perPerson)} ฿`).join('\n');
 
       navigator.clipboard.writeText(msg).then(() => {
