@@ -10,6 +10,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="BadCal" />
   <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
   <style>
     :root {
       --primary: #1a73e8;
@@ -23,6 +28,8 @@
       --border: #e5e7eb;
       --radius: 14px;
       --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      --font-body: 'IBM Plex Sans Thai', system-ui, sans-serif;
+      --font-display: 'Chakra Petch', 'IBM Plex Sans Thai', system-ui, sans-serif;
     }
 
     * {
@@ -32,7 +39,8 @@
     }
 
     body {
-      font-family: 'Sarabun', 'Segoe UI', sans-serif;
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
       background: var(--bg);
       color: var(--text);
       min-height: 100dvh;
@@ -41,8 +49,10 @@
 
     h1 {
       text-align: center;
-      font-size: 1.4rem;
+      font-family: var(--font-display);
+      font-size: 1.6rem;
       font-weight: 700;
+      letter-spacing: -0.01em;
       margin-bottom: 4px;
       color: var(--primary);
     }
@@ -63,11 +73,10 @@
     }
 
     .section-title {
-      font-size: 0.9rem;
-      font-weight: 700;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
       color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
       margin-bottom: 14px;
     }
 
@@ -80,7 +89,6 @@
     }
 
     input[type="text"],
-    input[type="date"],
     input[type="number"] {
       width: 100%;
       padding: 12px 14px;
@@ -179,8 +187,9 @@
       border: none;
       border-radius: var(--radius);
       font-size: 1.1rem;
-      font-family: inherit;
+      font-family: var(--font-display);
       font-weight: 700;
+      letter-spacing: 0.02em;
       cursor: pointer;
       box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35);
       transition: background 0.2s, transform 0.1s;
@@ -247,6 +256,7 @@
 
     .summary-box .row {
       display: flex;
+      font-variant-numeric: tabular-nums;
       justify-content: space-between;
     }
 
@@ -254,9 +264,10 @@
       border-top: 1.5px solid var(--border);
       margin-top: 8px;
       padding-top: 8px;
+      font-family: var(--font-display);
       font-weight: 700;
       color: var(--primary);
-      font-size: 0.95rem;
+      font-size: 1rem;
     }
 
     .player-costs {
@@ -279,9 +290,62 @@
     }
 
     .player-amount {
+      font-family: var(--font-display);
       font-weight: 700;
+      font-variant-numeric: tabular-nums;
       color: var(--primary);
       font-size: 1.05rem;
+    }
+
+    .payee-box {
+      margin-top: 16px;
+      padding: 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .payee-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .payee-name {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .payee-promptpay {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+      font-variant-numeric: tabular-nums;
+      margin: -8px 0 12px;
+    }
+
+    .payee-qr {
+      display: block;
+      width: 100%;
+      max-width: 260px;
+      margin: 0 auto;
+      border-radius: 10px;
+    }
+
+    .btn-share {
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: var(--primary);
+      font-size: 0.95rem;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
     }
 
     .toast {
@@ -371,6 +435,151 @@
       margin-top: 2px;
     }
 
+    /* Custom date picker */
+    .datepicker {
+      position: relative;
+    }
+
+    .date-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text);
+      background: #fafafa;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.2s;
+    }
+
+    .date-trigger:focus,
+    .datepicker.open .date-trigger {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+    }
+
+    .date-trigger .cal-icon {
+      font-size: 1.1rem;
+    }
+
+    .cal-popover {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+      padding: 14px;
+    }
+
+    .datepicker.open .cal-popover {
+      display: block;
+    }
+
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .cal-title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .cal-nav {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: var(--primary);
+      font-size: 1.2rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .cal-nav:hover {
+      background: #dbeafe;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .cal-dow {
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 4px 0;
+    }
+
+    .cal-dow:first-child {
+      color: var(--danger);
+    }
+
+    .cal-day {
+      aspect-ratio: 1;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .cal-day:hover {
+      background: #eff6ff;
+    }
+
+    .cal-day.today {
+      box-shadow: inset 0 0 0 1.5px var(--primary);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .cal-day.selected {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .cal-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .cal-today-btn {
+      padding: 7px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: var(--primary);
+      font-size: 0.88rem;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
     @media (min-width: 480px) {
       body {
         padding: 24px;
@@ -383,7 +592,7 @@
       }
 
       h1 {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
       }
     }
   </style>
@@ -406,8 +615,26 @@
     <div class="section-title">📋 ข้อมูลการเล่น</div>
 
     <div class="field">
-      <label for="play-date">วันที่เล่น</label>
-      <input type="date" id="play-date" />
+      <label for="date-trigger">วันที่เล่น</label>
+      <div class="datepicker" id="datepicker">
+        <input type="hidden" id="play-date" />
+        <button type="button" class="date-trigger" id="date-trigger" onclick="toggleCalendar()" aria-haspopup="dialog"
+          aria-expanded="false">
+          <span id="date-display">-</span>
+          <span class="cal-icon">📅</span>
+        </button>
+        <div class="cal-popover" role="dialog" aria-label="เลือกวันที่">
+          <div class="cal-header">
+            <button type="button" class="cal-nav" onclick="shiftMonth(-1)" aria-label="เดือนก่อนหน้า">‹</button>
+            <span class="cal-title" id="cal-title"></span>
+            <button type="button" class="cal-nav" onclick="shiftMonth(1)" aria-label="เดือนถัดไป">›</button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <div class="cal-footer">
+            <button type="button" class="cal-today-btn" onclick="selectDate(todayISO())">วันนี้</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="field">
@@ -448,6 +675,14 @@
 
     <div class="summary-box" id="summary-box"></div>
     <div class="player-costs" id="player-costs"></div>
+
+    <div class="payee-box">
+      <div class="payee-label">โอนเงินให้</div>
+      <div class="payee-name" id="payee-display">-</div>
+      <div class="payee-promptpay" id="promptpay-display"></div>
+      <img class="payee-qr" src="MyQR.JPG" alt="QR พร้อมเพย์สำหรับโอนเงิน" />
+      <button class="btn-share" id="share-btn" onclick="shareWithQR()" hidden>📤 แชร์ข้อความพร้อม QR</button>
+    </div>
   </div>
 
   <div class="toast" id="toast"></div>
@@ -514,6 +749,72 @@
       return `${parseInt(d)} ${months[parseInt(m) - 1]} ${parseInt(y) + 543}`;
     }
 
+    // Custom date picker
+    const THAI_MONTHS = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+    const THAI_DOW = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
+    let calView = { y: 0, m: 0 };
+
+    function toISO(y, m, d) {
+      return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    }
+
+    function todayISO() {
+      const t = new Date();
+      return toISO(t.getFullYear(), t.getMonth(), t.getDate());
+    }
+
+    function renderCalendar() {
+      const { y, m } = calView;
+      const selected = document.getElementById('play-date').value;
+      const today = todayISO();
+      document.getElementById('cal-title').textContent = `${THAI_MONTHS[m]} ${y + 543}`;
+
+      const firstDow = new Date(y, m, 1).getDay();
+      const daysInMonth = new Date(y, m + 1, 0).getDate();
+      let html = THAI_DOW.map(d => `<div class="cal-dow">${d}</div>`).join('');
+      html += '<div></div>'.repeat(firstDow);
+      for (let d = 1; d <= daysInMonth; d++) {
+        const iso = toISO(y, m, d);
+        const cls = ['cal-day', iso === today && 'today', iso === selected && 'selected'].filter(Boolean).join(' ');
+        html += `<button type="button" class="${cls}" onclick="selectDate('${iso}')">${d}</button>`;
+      }
+      document.getElementById('cal-grid').innerHTML = html;
+    }
+
+    function shiftMonth(delta) {
+      const d = new Date(calView.y, calView.m + delta, 1);
+      calView = { y: d.getFullYear(), m: d.getMonth() };
+      renderCalendar();
+    }
+
+    function selectDate(iso) {
+      document.getElementById('play-date').value = iso;
+      document.getElementById('date-display').textContent = formatDate(iso);
+      closeCalendar();
+    }
+
+    function toggleCalendar() {
+      const picker = document.getElementById('datepicker');
+      if (picker.classList.contains('open')) { closeCalendar(); return; }
+      const [y, m] = (document.getElementById('play-date').value || todayISO()).split('-').map(Number);
+      calView = { y, m: m - 1 };
+      renderCalendar();
+      picker.classList.add('open');
+      document.getElementById('date-trigger').setAttribute('aria-expanded', 'true');
+    }
+
+    function closeCalendar() {
+      document.getElementById('datepicker').classList.remove('open');
+      document.getElementById('date-trigger').setAttribute('aria-expanded', 'false');
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#datepicker')) closeCalendar();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeCalendar();
+    });
+
     function fmt(num) {
       return num.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
@@ -553,12 +854,31 @@
         </div>
       `).join('');
 
+      document.getElementById('payee-display').textContent = getPayee() || '-';
+      document.getElementById('promptpay-display').textContent =
+        PAYEE_PROMPTPAY ? `พร้อมเพย์ ${formatPromptPay(PAYEE_PROMPTPAY)}` : '';
+
       const resultCard = document.getElementById('result-card');
       resultCard.style.display = 'block';
       resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function copyToChat() {
+    const PAYEE_NAME = 'จิณณวัตร เจริญศิลป์';
+    const PAYEE_PROMPTPAY = '0910317150';
+
+    // 10 digits = phone (091-031-7150), 13 digits = national ID (1-2345-67890-12-3)
+    function formatPromptPay(num) {
+      const d = num.replace(/\D/g, '');
+      if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+      if (d.length === 13) return d.replace(/(\d)(\d{4})(\d{5})(\d{2})(\d)/, '$1-$2-$3-$4-$5');
+      return num;
+    }
+
+    function getPayee() {
+      return PAYEE_NAME;
+    }
+
+    function buildMessage() {
       const players = getPlayers();
       const date = document.getElementById('play-date').value;
       const shuttlePrice = parseFloat(document.getElementById('shuttle-price').value) || 0;
@@ -581,16 +901,74 @@
       msg += `─────────────────\n`;
       msg += players.map(n => `• ${n} → ${fmt(perPerson)} ฿`).join('\n');
 
-      navigator.clipboard.writeText(msg).then(() => {
-        const btn = document.getElementById('copy-btn');
-        btn.classList.add('copied');
-        btn.innerHTML = '<span>✅</span> คัดลอกแล้ว';
-        showToast('คัดลอกข้อความแล้ว!');
-        setTimeout(() => {
-          btn.classList.remove('copied');
-          btn.innerHTML = '<span>📋</span> คัดลอก';
-        }, 2500);
-      }).catch(() => {
+      const payee = getPayee();
+      if (payee) {
+        msg += `\n─────────────────\n`;
+        msg += `💳 โอนเงินให้: ${payee}`;
+      }
+      if (PAYEE_PROMPTPAY) {
+        msg += payee ? '\n' : `\n─────────────────\n`;
+        msg += `📱 พร้อมเพย์: ${formatPromptPay(PAYEE_PROMPTPAY)}`;
+      }
+      return msg;
+    }
+
+    let qrFile = null;
+
+    async function loadQRFile() {
+      try {
+        const blob = await (await fetch('MyQR.JPG')).blob();
+        const file = new File([blob], 'MyQR.jpg', { type: 'image/jpeg' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          qrFile = file;
+          document.getElementById('share-btn').hidden = false;
+        }
+      } catch (e) { }
+    }
+
+    async function shareWithQR() {
+      try {
+        await navigator.share({ text: buildMessage(), files: [qrFile] });
+      } catch (e) {
+        if (e.name !== 'AbortError') showToast('แชร์ไม่สำเร็จ');
+      }
+    }
+
+    // Clipboard images must be PNG (Safari/Chrome reject JPEG), so convert once up front
+    let qrPngPromise = null;
+
+    function getQRPng() {
+      if (!qrPngPromise) {
+        qrPngPromise = new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png');
+          };
+          img.onerror = reject;
+          img.src = 'MyQR.JPG';
+        });
+        qrPngPromise.catch(() => { qrPngPromise = null; });
+      }
+      return qrPngPromise;
+    }
+
+    function markCopied(toastMsg) {
+      const btn = document.getElementById('copy-btn');
+      btn.classList.add('copied');
+      btn.innerHTML = '<span>✅</span> คัดลอกแล้ว';
+      showToast(toastMsg);
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<span>📋</span> คัดลอก';
+      }, 2500);
+    }
+
+    function copyTextOnly(msg) {
+      return navigator.clipboard.writeText(msg).catch(() => {
         // fallback for older browsers
         const ta = document.createElement('textarea');
         ta.value = msg;
@@ -600,8 +978,25 @@
         ta.select();
         document.execCommand('copy');
         document.body.removeChild(ta);
-        showToast('คัดลอกข้อความแล้ว!');
       });
+    }
+
+    function copyToChat() {
+      const msg = buildMessage();
+
+      if (!window.ClipboardItem || !navigator.clipboard?.write) {
+        copyTextOnly(msg).then(() => markCopied('คัดลอกข้อความแล้ว!'));
+        return;
+      }
+
+      // Pass the PNG as a promise so the write stays inside the tap gesture (required by iOS Safari)
+      const item = new ClipboardItem({
+        'text/plain': new Blob([msg], { type: 'text/plain' }),
+        'image/png': getQRPng(),
+      });
+      navigator.clipboard.write([item])
+        .then(() => markCopied('คัดลอกข้อความและ QR แล้ว!'))
+        .catch(() => copyTextOnly(msg).then(() => markCopied('คัดลอกข้อความแล้ว (ไม่มี QR)')));
     }
 
     function showToast(msg) {
@@ -614,8 +1009,9 @@
     // Init with 2 default players and today's date
     addPlayer();
     addPlayer();
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('play-date').value = today;
+    selectDate(todayISO());
+    loadQRFile();
+    getQRPng();
   </script>
 </body>
 
