@@ -911,6 +911,9 @@
         msg += payee ? '\n' : `\n─────────────────\n`;
         msg += `📱 พร้อมเพย์: ${formatPromptPay(PAYEE_PROMPTPAY)}`;
       }
+      if (payee || PAYEE_PROMPTPAY) {
+        msg += `\n🧾 โอนแล้วส่งสลิปด้วย`;
+      }
       return msg;
     }
 
