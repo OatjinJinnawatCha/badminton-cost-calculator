@@ -336,7 +336,7 @@
 
     .btn-share {
       width: 100%;
-      margin-top: 14px;
+      margin-top: 10px;
       padding: 12px;
       border: none;
       border-radius: 10px;
@@ -681,6 +681,7 @@
       <div class="payee-name" id="payee-display">-</div>
       <div class="payee-promptpay" id="promptpay-display"></div>
       <img class="payee-qr" src="MyQR.JPG" alt="QR พร้อมเพย์สำหรับโอนเงิน" />
+      <button class="btn-share" id="copy-qr-btn" onclick="copyQR()" hidden>🖼️ คัดลอก QR</button>
       <button class="btn-share" id="share-btn" onclick="shareWithQR()" hidden>📤 แชร์ข้อความพร้อม QR</button>
     </div>
   </div>
@@ -982,21 +983,15 @@
     }
 
     function copyToChat() {
-      const msg = buildMessage();
+      copyTextOnly(buildMessage()).then(() => markCopied('คัดลอกข้อความแล้ว!'));
+    }
 
-      if (!window.ClipboardItem || !navigator.clipboard?.write) {
-        copyTextOnly(msg).then(() => markCopied('คัดลอกข้อความแล้ว!'));
-        return;
-      }
-
+    // Chat apps paste only one clipboard item, so the QR gets its own button
+    function copyQR() {
       // Pass the PNG as a promise so the write stays inside the tap gesture (required by iOS Safari)
-      const item = new ClipboardItem({
-        'text/plain': new Blob([msg], { type: 'text/plain' }),
-        'image/png': getQRPng(),
-      });
-      navigator.clipboard.write([item])
-        .then(() => markCopied('คัดลอกข้อความและ QR แล้ว!'))
-        .catch(() => copyTextOnly(msg).then(() => markCopied('คัดลอกข้อความแล้ว (ไม่มี QR)')));
+      navigator.clipboard.write([new ClipboardItem({ 'image/png': getQRPng() })])
+        .then(() => showToast('คัดลอก QR แล้ว!'))
+        .catch(() => showToast('คัดลอก QR ไม่สำเร็จ'));
     }
 
     function showToast(msg) {
@@ -1011,7 +1006,10 @@
     addPlayer();
     selectDate(todayISO());
     loadQRFile();
-    getQRPng();
+    if (window.ClipboardItem && navigator.clipboard?.write) {
+      document.getElementById('copy-qr-btn').hidden = false;
+      getQRPng();
+    }
   </script>
 </body>
 
